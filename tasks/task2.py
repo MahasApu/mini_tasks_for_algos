@@ -1,9 +1,10 @@
 def getlen(num):
     l = 1
     while num // 10:
-        num//=10
-        l+=1
+        num //= 10
+        l += 1
     return l
+
 
 def karatsuba(x, y):
     if x // 10 == 0 or y // 10 == 0:
