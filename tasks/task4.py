@@ -25,6 +25,7 @@
 # # all commits
 # commits=($(git log --pretty=format:'%h'))
 #
+
 #
 # #for (( i=$good; i<$bad; i++));
 # #do
