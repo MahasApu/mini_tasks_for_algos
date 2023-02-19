@@ -1,6 +1,4 @@
-
 def wiggle_sort(nums):
-
     pivot = len(nums) // 2
     while pivot:
         for i in range(pivot, len(nums)):
@@ -18,11 +16,11 @@ def wiggle_sort(nums):
     temp = [0 for i in range(len(nums))]
 
     for i in range(1, len(nums), 2):
-            temp[i] = nums[right]
-            right -= 1
+        temp[i] = nums[right]
+        right -= 1
     for i in range(0, len(nums), 2):
-            temp[i] = nums[pivot]
-            pivot -= 1
+        temp[i] = nums[pivot]
+        pivot -= 1
 
     for i in range(len(nums)):
         nums[i] = temp[i]
