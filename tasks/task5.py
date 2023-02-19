@@ -30,7 +30,7 @@ def ceil(num_1, num_2):
 
 
 def shell_sort(array):
-    a = [(3 ** i - 1) // 2 for i in range(10) if i >= 1]
+    a = [(3 ** i - 1) // 2 for i in range(len(array)//3 + 1 ) if i >= 1]
     for elem in a:
         if elem <= ceil(len(array), 2):
             insertion_sort_k(array, elem)
