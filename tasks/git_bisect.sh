@@ -49,6 +49,7 @@ do
     fi
 
     git checkout - -q > /dev/null
+    mid=$[($good + $bad) / 2]
 done
 echo "bad commit is"
 echo $wanted
