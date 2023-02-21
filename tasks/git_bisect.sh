@@ -34,11 +34,19 @@ read command
 pivot=$[($good + $bad) / 2]
 wanted=$bad
 
+# all commits
+commits=($(git log --pretty=format:'%h'))
+
+echo
+echo "Enter the command to execute"
+read command
+
+pivot=$[($good + $bad) / 2]
+wanted=$bad
+
 while [ $[$good - $bad] -lt -1 ] | [ $[$good - $bad] -gt 1 ]
 do
-
-    revision=`git rev-parse HEAD~$pivot`  #change head to pivot commit
-    git checkout $revision  -q > /dev/null # turn to pivot commit
+    git checkout ${commits[$pivot]}  -q > /dev/null
     $command
     result=$?
 
@@ -46,10 +54,8 @@ do
         good=$pivot
     else
         bad=$pivot
-        wanted=$revision
+        wanted=${commits[$pivot]}
     fi
-
-    git checkout - -q > /dev/null
     pivot=$[($good + $bad) / 2]
 done
 echo "bad commit is"
