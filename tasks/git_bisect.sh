@@ -14,7 +14,6 @@ good=`git log $start..HEAD --pretty=oneline | wc -l`
 bad=`git log $end..HEAD --pretty=oneline | wc -l`
 echo $good $bad
 
-
 #expand range
 if [ $good -gt $bad ]; then
     good=$[ $good + 1 ]
@@ -26,6 +25,8 @@ fi
 
 # all commits
 
+# commits=($(git log --pretty=format:'%h'))
+
 echo
 echo "Enter the command to execute"
 read command
@@ -33,23 +34,23 @@ read command
 pivot=$[($good + $bad) / 2]
 wanted=$bad
 
-while [ $[$good - $bad] -lt -1 -o $[$good - $bad] -gt 1 ]
+while [ $[$good - $bad] -lt -1 ] | [ $[$good - $bad] -gt 1 ]
 do
 
-    revision=`git rev-parse HEAD~$mid`
-    git checkout $revision  -q > /dev/null
+    revision=`git rev-parse HEAD~$pivot`  #change head to pivot commit
+    git checkout $revision  -q > /dev/null # turn to pivot commit
     $command
     result=$?
 
     if [ $result -eq 0 ]; then
-        good=$mid
+        good=$pivot
     else
-        bad=$mid
+        bad=$pivot
         wanted=$revision
     fi
 
     git checkout - -q > /dev/null
-    mid=$[($good + $bad) / 2]
+    pivot=$[($good + $bad) / 2]
 done
 echo "bad commit is"
 echo $wanted
