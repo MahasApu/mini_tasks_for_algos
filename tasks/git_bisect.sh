@@ -24,17 +24,6 @@ else
 fi
 
 # all commits
-
-# commits=($(git log --pretty=format:'%h'))
-
-echo
-echo "Enter the command to execute"
-read command
-
-pivot=$[($good + $bad) / 2]
-wanted=$bad
-
-# all commits
 commits=($(git log --pretty=format:'%h'))
 
 echo
@@ -56,6 +45,7 @@ do
         bad=$pivot
         wanted=${commits[$pivot]}
     fi
+    git checkout - -q > /dev/null
     pivot=$[($good + $bad) / 2]
 done
 echo "bad commit is"
