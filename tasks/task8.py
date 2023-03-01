@@ -1,14 +1,11 @@
-
 def isIdealPermutation(nums):
-
     def locals_inv(arr):
-                if len(arr) == 1: return 0
-                k=0
-                for i in range(len(arr)-1):
-                    if arr[i]>arr[i+1]:
-                        k+=1
-                return k
-
+        if len(arr) == 1: return 0
+        k = 0
+        for i in range(len(arr) - 1):
+            if arr[i] > arr[i + 1]:
+                k += 1
+        return k
 
     def merge_count_inversion(arr):
         if len(arr) <= 1:
@@ -44,4 +41,4 @@ def isIdealPermutation(nums):
 
 
 if __name__ == "__main__":
-    print(isIdealPermutation([2,0,1]))
+    print(isIdealPermutation([2, 0, 1]))
