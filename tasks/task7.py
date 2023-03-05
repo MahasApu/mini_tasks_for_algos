@@ -1,95 +1,87 @@
+def swap(arr, ind1, ind2):
+    temp = arr[ind1]
+    arr[ind1] = arr[ind2]
+    arr[ind2] = temp
 
-# DMTA-like solution
 
-def classic_merge(nums):
-    def merge(array, start, middle, end):
-        n1 = middle - start + 1
-        n2 = end - middle
+def merge(arr, start1, end1, start2, end2, buff1, buff2, buffer):
+    # lsize = end1 - start1
+    # rsize = end2 - start2
+    # bsize = buff2 - buff1
 
-        b = []
-        c = []
-        for i in range(n1):
-            b.append(array[start + i])
+    i, j, k = 0, 0, 0
+    while i + start1 <= end1 and j + start2 <= end2:
 
-        for j in range(n2):
-            c.append(array[middle + j + 1])
-
-        i, j = 0, 0
-        el = start
-        while i < n1 and j < n2:
-            if b[i] <= c[j]:
-                array[el] = b[i]
-                i += 1
-            else:
-                array[el] = c[j]
-                j += 1
-            el += 1
-        while i < n1:
-            array[el] = b[i]
+        if arr[i + start1] <= arr[j + start2]:
+            swap(arr, i + start1, k + buff1)
             i += 1
-            el += 1
-        while j < n2:
-            array[el] = c[j]
+        else:
+            swap(arr, j + start2, k + buff1)
             j += 1
-            el += 1
+        # print(buffer, k)
+        k += 1
 
-    def merge_sort(array, start, end):
-        if start > end:
-            return
-        if start < end:
-            middle = (start + end) // 2
+    while i + start1 <= end1 and k + buff1 <= buff2:
+        swap(arr, i + start1, k + buff1)
+        k += 1
+        i += 1
 
-            merge_sort(array, start, middle)
-            merge_sort(array, middle + 1, end)
-
-            print(start, middle, end)
-            merge(array, start, middle, end)
-
-    merge_sort(nums, 0, len(nums) - 1)
-    return nums
-
-# in-place merge
-
-def in_place(nums):
-
-    def swap(arr, ind1, ind2):
-        temp = arr[ind1]
-        arr[ind1] = arr[ind2]
-        arr[ind2] = temp
-
-    def merge_in_place(arr, start, end):
-        length = end - start + 1
-        mid = (length + 1) // 2
-        while mid >= 1:
-            pointer = start
-
-            while pointer + mid <= end:
-                if arr[pointer] > arr[pointer + mid]:
-                    swap(arr, pointer, pointer + mid)
-                pointer += 1
-
-            if mid == 1:
-                break
-            mid = (mid + 1) // 2
+    while j + start2 <= end2 and k + buff1 <= buff2:
+        swap(arr, j + start2, k + buff1)
+        k += 1
+        j += 1
 
 
-    def merge(arr, start, end):
 
-        if end - start < 1:
-            return
-        if end - start == 1:
-            if arr[start] > arr[end]:
-                return swap(arr, start, end)
-            return
+def merge_sort(array, start, end, buff1, buff2, buffer):
+    if end - start == 0:
+        return
+    if end - start == 1:
+        if array[0] > array[1]:
+            swap(array, 0, 1)
+        return
 
-        mid = start + (end - start) // 2
-        merge(arr, start, mid)
-        merge(arr, mid, end)
-        merge_in_place(arr, start, end)
+    if end - start > 1:
+        middle = (end - start) // 2
+        merge_sort(array, 0, middle, buff1, buff2, buffer)
+        # print("buffer is", buff1, buff2, buff2-buff1)
+        # print(end - middle, middle)
+        merge_sort(array, middle + 1, end - 1, buff1, buff2, buffer)
+        # print("before merge", array)
+        merge(array, 0, middle, middle + 1, end, buff1, buff2, buffer)
+        # print("after  merge", array)
 
-    merge(nums, 0, len(nums) - 1)
-    return nums
 
-if __name__ == '__main__':
-    print(classic_merge([3,6,34,4,2,33,56,7,7,5,45,4]))
-    print(in_place([3, 6, 34, 4, 2, 33, 56, 7, 7, 5, 45, 4]))
+def merge_in_place(arr, start, end):
+    if end - start == 0:
+        return
+    if end - start == 1:
+        if arr[0] > arr[1]:
+            swap(arr, 0, 1)
+        return
+
+    pivot = (end - start) // 2
+    merge_sort(arr, pivot, end, 0, end, arr)
+
+    while pivot > 0:
+        mid = (pivot) // 2
+        merge_sort(arr, 0, mid, mid + 1, end, arr)
+        merge(arr, 0, mid, pivot, end, mid, end, arr)
+        pivot = mid
+
+
+def printer(arr):
+    merge_in_place(arr, 0, len(arr) - 1)
+    print(arr)
+
+
+if __name__ == "__main__":
+    arr1 = [2, 55, 4545, 342, 31, 35, 3, 6, 34, 4, 2, 33, 56, 7, 7, 45, 4, 55, 34, 22, 42, 1, 453, 34, 111,
+            2, 56, 5, 879, 8, 7, 556, 3, 34, 34, 22, 3, 45, 3, -11, 5, 6, 56, 7, -12, 99, 7879, 4, 3, 4, 5, 4, 3, 9]
+
+    arr2 = [607, 641, 431, 614, 438, -28, 326, -32, 609, 963, 943, 156, -63, 103, 465, 828, 70, 566, 260, 765, 540, -64,
+            594, -85, 269, 735,
+            2, 214, 370, -57, 248, 187, 508, 496, 561, 861, 830]
+    arr = [2, 1, 8, 11, 22, 12, 1, 0, 9]
+
+    printer(arr)
