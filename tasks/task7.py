@@ -10,9 +10,9 @@ def merge(arr, start1, end1, start2, end2, buff1, buff2, buffer):
     # bsize = buff2 - buff1
 
     i, j, k = 0, 0, 0
-    while i + start1 <= end1 and j + start2 <= end2:
+    while i + start1 < end1 and j + start2 < end2:
 
-        if arr[i + start1] <= arr[j + start2]:
+        if arr[i + start1] < arr[j + start2]:
             swap(arr, i + start1, k + buff1)
             i += 1
         else:
@@ -21,16 +21,15 @@ def merge(arr, start1, end1, start2, end2, buff1, buff2, buffer):
         # print(buffer, k)
         k += 1
 
-    while i + start1 <= end1 and k + buff1 <= buff2:
+    while i + start1 < end1 and k + buff1 < buff2:
         swap(arr, i + start1, k + buff1)
         k += 1
         i += 1
 
-    while j + start2 <= end2 and k + buff1 <= buff2:
+    while j + start2 < end2 and k + buff1 < buff2:
         swap(arr, j + start2, k + buff1)
         k += 1
         j += 1
-
 
 
 def merge_sort(array, start, end, buff1, buff2, buffer):
@@ -46,7 +45,7 @@ def merge_sort(array, start, end, buff1, buff2, buffer):
         merge_sort(array, 0, middle, buff1, buff2, buffer)
         # print("buffer is", buff1, buff2, buff2-buff1)
         # print(end - middle, middle)
-        merge_sort(array, middle + 1, end - 1, buff1, buff2, buffer)
+        merge_sort(array, middle + 1, end, buff1, buff2, buffer)
         # print("before merge", array)
         merge(array, 0, middle, middle + 1, end, buff1, buff2, buffer)
         # print("after  merge", array)
@@ -61,7 +60,7 @@ def merge_in_place(arr, start, end):
         return
 
     pivot = (end - start) // 2
-    merge_sort(arr, pivot, end, 0, end, arr)
+    merge_sort(arr, 0, pivot, pivot+1, end, arr)
 
     while pivot > 0:
         mid = (pivot) // 2
@@ -82,6 +81,6 @@ if __name__ == "__main__":
     arr2 = [607, 641, 431, 614, 438, -28, 326, -32, 609, 963, 943, 156, -63, 103, 465, 828, 70, 566, 260, 765, 540, -64,
             594, -85, 269, 735,
             2, 214, 370, -57, 248, 187, 508, 496, 561, 861, 830]
-    arr = [2, 1, 8, 11, 22, 12, 1, 0, 9]
+    arr = [2, 1, 8, 11, 22, 12, 1, 0, 9, 13]
 
     printer(arr)
