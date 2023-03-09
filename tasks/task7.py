@@ -9,16 +9,15 @@ def merge(arr, start1, end1, start2, end2, buff1, buff2, buffer):
     # rsize = end2 - start2
     # bsize = buff2 - buff1
 
-    i, j, k = 0, 0, 0
-    while i + start1 < end1 and j + start2 < end2:
+    i, j, k = start1, start2, buff2
+    while i < end1 and j < end2:
 
-        if arr[i + start1] < arr[j + start2]:
-            swap(arr, i + start1, k + buff1)
+        if arr[i] < arr[j]:
+            swap(arr, i, k)
             i += 1
         else:
-            swap(arr, j + start2, k + buff1)
+            swap(arr, j, k + buff1)
             j += 1
-        # print(buffer, k)
         k += 1
 
     while i + start1 < end1 and k + buff1 < buff2:
@@ -41,14 +40,11 @@ def merge_sort(array, start, end, buff1, buff2, buffer):
         return
 
     if end - start > 1:
-        middle = (end - start) // 2
+        middle = start + (end - start) // 2
+
         merge_sort(array, 0, middle, buff1, buff2, buffer)
-        # print("buffer is", buff1, buff2, buff2-buff1)
-        # print(end - middle, middle)
         merge_sort(array, middle + 1, end, buff1, buff2, buffer)
-        # print("before merge", array)
         merge(array, 0, middle, middle + 1, end, buff1, buff2, buffer)
-        # print("after  merge", array)
 
 
 def merge_in_place(arr, start, end):
@@ -75,6 +71,7 @@ def printer(arr):
 
 
 if __name__ == "__main__":
+
     arr1 = [2, 55, 4545, 342, 31, 35, 3, 6, 34, 4, 2, 33, 56, 7, 7, 45, 4, 55, 34, 22, 42, 1, 453, 34, 111,
             2, 56, 5, 879, 8, 7, 556, 3, 34, 34, 22, 3, 45, 3, -11, 5, 6, 56, 7, -12, 99, 7879, 4, 3, 4, 5, 4, 3, 9]
 
