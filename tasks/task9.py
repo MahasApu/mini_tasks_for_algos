@@ -1,9 +1,17 @@
-
 import random
 
 
+def plus_matrix(matrix1, matrix2):
+    result = [[0 for i in range(len(matrix1[0]))] for j in range(len(matrix1))]
+    for i in range(len(matrix1)):
+        # iterate through columns
+        for j in range(len(matrix1[0])):
+            result[i][j] += matrix2[i][j] + matrix1[i][j]
+
+    return result
+
+
 def classic_mult_matrix(matrix1, matrix2):
-    assert len(matrix1) == len(matrix2)
     assert len(matrix1[0]) == len(matrix2[1])
 
     length = len(matrix1)
@@ -37,7 +45,7 @@ def printer(matrix):
 
 
 if __name__ == "__main__":
-    size = 3
+    size = 1000
     matrix1 = [[random.randint(1, 11) for j in range(size)] for i in range(size)]
     matrix2 = [[random.randint(1, 11) for j in range(size)] for i in range(size)]
     printer(classic_mult_matrix(matrix1, matrix2))
