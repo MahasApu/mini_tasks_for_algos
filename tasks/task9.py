@@ -1,5 +1,6 @@
 import random
 from benchmarker import format_table
+import types
 
 from time import time
 
@@ -58,7 +59,6 @@ def get_time(funcs, **kwargs):
 
 
 def plus_matrix(matrix1, matrix2):
-    # print(matrix1, matrix2,'kkkkkk')
     if len(matrix1) > 1 and len(matrix2) > 1:
 
         row_len1 = len(matrix1[0])
@@ -70,17 +70,20 @@ def plus_matrix(matrix1, matrix2):
 
         result = [[0 for _ in range(row_len1)] for _ in range(column_len1)]
         for i in range(column_len1):
-            # iterate through columns
             for j in range(row_len1):
-                result[i][j] += matrix2[i][j] + matrix1[i][j]
+                result[i][j] += matrix1[i][j] + matrix2[i][j]
 
         return result
     else:
-        return [matrix1[0] + matrix2[0]]
+        if isinstance(matrix1[0], list):
+            return [[matrix1[0][0] + matrix2[0][0]]]
+        else:
+            return [matrix1[0] + matrix2[0]]
 
 
 def minus_matrix(matrix1, matrix2):
     if len(matrix1) > 1 and len(matrix2) > 1:
+
         row_len1 = len(matrix1[0])
         column_len1 = len(matrix1)
         row_len2 = len(matrix2[0])
@@ -91,9 +94,15 @@ def minus_matrix(matrix1, matrix2):
         result = [[0 for _ in range(row_len1)] for _ in range(column_len1)]
         for i in range(column_len1):
             for j in range(row_len1):
-                result[i][j] += matrix2[i][j] - matrix1[i][j]
+                result[i][j] += matrix1[i][j] - matrix2[i][j]
+
+        return result
     else:
-        return [matrix1[0] - matrix2[0]]
+
+        if isinstance(matrix1[0], list):
+            return [[matrix1[0][0] - matrix2[0][0]]]
+        else:
+            return [matrix1[0] - matrix2[0]]
 
 
 def mult_matrix(matrix1, matrix2):
@@ -143,6 +152,7 @@ def merge_matrix(matrix_11, matrix_12, matrix_21, matrix_22):
         for j in range(column_len2):
             matrix_total.append(matrix_21[j] + matrix_22[j])
     else:
+
         matrix_total.append(matrix_11 + matrix_12)
         matrix_total.append(matrix_21 + matrix_22)
 
@@ -177,6 +187,7 @@ def extend_matrix_size(matrix):
         power_two <<= 1
     return power_two
 
+
 def quick_mult_matrix(matrix1, matrix2):
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
@@ -208,6 +219,47 @@ def quick_mult_matrix(matrix1, matrix2):
         return result
 
 
+def strassen_algorithm(matrix1, matrix2):
+    column_len1 = len(matrix1)
+    column_len2 = len(matrix2)
+
+    assert column_len1 == column_len2
+
+    if column_len1 == 1 and column_len2 == 1:
+        return [matrix1[0][0] * matrix2[0][0]]
+
+
+    else:
+        A, B, C, D = divide_matrix(matrix1)
+        E, F, G, H = divide_matrix(matrix2)
+
+        F_H = minus_matrix(F, H)
+        A_B = plus_matrix(A, B)
+        C_D = plus_matrix(C, D)
+        G_E = minus_matrix(G, E)
+        A_D = plus_matrix(A, D)
+        E_H = plus_matrix(E, H)
+        B_D = minus_matrix(B, D)
+        G_H = plus_matrix(G, H)
+        A_C = minus_matrix(A, C)
+        E_F = plus_matrix(E, F)
+
+        P1 = strassen_algorithm(A, F_H)
+        P2 = strassen_algorithm(A_B, H)
+        P3 = strassen_algorithm(C_D, E)
+        P4 = strassen_algorithm(D, G_E)
+        P5 = strassen_algorithm(A_D, E_H)
+        P6 = strassen_algorithm(B_D, G_H)
+        P7 = strassen_algorithm(A_C, E_F)
+
+        Q1 = plus_matrix(plus_matrix(P5, P4), minus_matrix(P6, P2))
+        Q2 = plus_matrix(P1, P2)
+        Q3 = plus_matrix(P3, P4)
+        Q4 = plus_matrix(minus_matrix(P1, P3), minus_matrix(P5, P7))
+
+        result = merge_matrix(Q1, Q2, Q3, Q4)
+        return result
+
 
 def printer(matrix):
     for i in range(len(matrix)):
@@ -219,5 +271,8 @@ if __name__ == "__main__":
     m1 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     m2 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     E = [[0 if j != i else 1 for j in range(size)] for i in range(size)]
-    get_time([classic_mult_matrix], matrix1=m1, matrix2=E)
+    get_time([classic_mult_matrix], matrix1=m1, matrix2=m2)
 
+    printer(mult_matrix(m1, m2))
+    printer(quick_mult_matrix(m1, m2))
+    printer(strassen_algorithm(m1, m2))
