@@ -1,4 +1,12 @@
+'''
+Example of input data:
 
+benchmarks = ["best case", "worst case", "medium rare case"]
+algos = ["quick sort00000000", "merge sort", "bubble sort"]
+results = [[1.23, 1.56, 2.0],
+           [3.3, 2.9, 3888.9],
+           [11.11, 32377777777776776.555, 22.7]]
+'''
 
 def format_table(benchmarks, algos, results):
 
