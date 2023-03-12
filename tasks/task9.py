@@ -19,7 +19,6 @@ def get_time(funcs, **kwargs):
         while counter <= times:
             summ += time_wrapper(func, **kwargs)
             counter += 1
-
         return f'{(summ / times):.5f}s'
 
     def standard_deviation(func, **kwargs):
@@ -42,7 +41,6 @@ def get_time(funcs, **kwargs):
             product *= time_wrapper(func, **kwargs)
             counter += 1
         result = product ** power
-
         return f'{(result):.5f}s'
 
     result = []
@@ -60,35 +58,95 @@ def get_time(funcs, **kwargs):
 
 
 def plus_matrix(matrix1, matrix2):
-    row_len1 = len(matrix1[0])
-    column_len1 = len(matrix1)
-    row_len2 = len(matrix2[0])
-    column_len2 = len(matrix2)
+    # print(matrix1, matrix2,'kkkkkk')
+    if len(matrix1) > 1 and len(matrix2) > 1:
 
-    assert row_len1 == column_len2
+        row_len1 = len(matrix1[0])
+        column_len1 = len(matrix1)
+        row_len2 = len(matrix2[0])
+        column_len2 = len(matrix2)
 
-    result = [[0 for _ in range(row_len1)] for _ in range(column_len1)]
-    for i in range(column_len1):
-        # iterate through columns
-        for j in range(row_len1):
-            result[i][j] += matrix2[i][j] + matrix1[i][j]
+        assert row_len1 == column_len2
 
-    return result
+        result = [[0 for _ in range(row_len1)] for _ in range(column_len1)]
+        for i in range(column_len1):
+            # iterate through columns
+            for j in range(row_len1):
+                result[i][j] += matrix2[i][j] + matrix1[i][j]
+
+        return result
+    else:
+        return [matrix1[0] + matrix2[0]]
 
 
 def minus_matrix(matrix1, matrix2):
-    row_len1 = len(matrix1[0])
-    column_len1 = len(matrix1)
-    row_len2 = len(matrix2[0])
-    column_len2 = len(matrix2)
+    if len(matrix1) > 1 and len(matrix2) > 1:
+        row_len1 = len(matrix1[0])
+        column_len1 = len(matrix1)
+        row_len2 = len(matrix2[0])
+        column_len2 = len(matrix2)
 
-    assert row_len1 == column_len2
+        assert row_len1 == column_len2
 
-    result = [[0 for _ in range(row_len1)] for _ in range(column_len1)]
-    for i in range(column_len1):
-        # iterate through columns
-        for j in range(row_len1):
-            result[i][j] += matrix2[i][j] - matrix1[i][j]
+        result = [[0 for _ in range(row_len1)] for _ in range(column_len1)]
+        for i in range(column_len1):
+            for j in range(row_len1):
+                result[i][j] += matrix2[i][j] - matrix1[i][j]
+    else:
+        return [matrix1[0] - matrix2[0]]
+
+
+def mult_matrix(matrix1, matrix2):
+    if len(matrix1) > 1 and len(matrix2) > 1:
+        row_len1 = len(matrix1[0])
+        column_len1 = len(matrix1)
+        row_len2 = len(matrix2[0])
+        column_len2 = len(matrix2)
+
+        assert row_len1 == column_len2
+
+        result = [[0 for _ in range(row_len2)] for _ in range(column_len1)]
+
+        for i in range(column_len1):
+            for j in range(row_len2):
+                for k in range(column_len2):
+                    result[i][j] += matrix1[i][k] * matrix2[k][j]
+
+        return result
+    else:
+        return [matrix1[0] * matrix2[0]]
+
+
+def divide_matrix(matrix):
+    column_len = len(matrix)
+    row_len = len(matrix[0])
+    mid_column = column_len // 2
+    mid_row = row_len // 2
+
+    matrix_11 = [M[:mid_column] for M in matrix[:mid_row]]
+    matrix_12 = [M[mid_column:] for M in matrix[:mid_row]]
+    matrix_21 = [M[:mid_column] for M in matrix[mid_row:]]
+    matrix_22 = [M[mid_column:] for M in matrix[mid_row:]]
+
+    return matrix_11, matrix_12, matrix_21, matrix_22
+
+
+def merge_matrix(matrix_11, matrix_12, matrix_21, matrix_22):
+    matrix_total = []
+    column_len1 = len(matrix_11)
+    column_len2 = len(matrix_21)
+
+    if column_len1 > 1:
+        for i in range(column_len1):
+            matrix_total.append(matrix_11[i] + matrix_12[i])
+
+        for j in range(column_len2):
+            matrix_total.append(matrix_21[j] + matrix_22[j])
+    else:
+        matrix_total.append(matrix_11 + matrix_12)
+        matrix_total.append(matrix_21 + matrix_22)
+
+    return matrix_total
 
 
 def classic_mult_matrix(kwargs):
@@ -119,13 +177,36 @@ def extend_matrix_size(matrix):
         power_two <<= 1
     return power_two
 
+def quick_mult_matrix(matrix1, matrix2):
+    column_len1 = len(matrix1)
+    column_len2 = len(matrix2)
 
-def eight_rec_mult_matrix(matrix1, matrix2):
-    assert len(matrix1) == len(matrix2)
-    assert len(matrix1[0]) == len(matrix2[1])
+    assert column_len1 == column_len2
 
-    # check if the size of matrix is not equal to any of power of two
-    # then extend the size by adding zeros
+    if column_len1 == 1:
+        return [matrix1[0][0] * matrix2[0][0]]
+    else:
+        A, B, C, D = divide_matrix(matrix1)
+        E, F, G, H = divide_matrix(matrix2)
+
+        AE = quick_mult_matrix(A, E)
+        BG = quick_mult_matrix(B, G)
+        AF = quick_mult_matrix(A, F)
+        BH = quick_mult_matrix(B, H)
+        CE = quick_mult_matrix(C, E)
+        DG = quick_mult_matrix(D, G)
+        CF = quick_mult_matrix(C, F)
+        DH = quick_mult_matrix(D, H)
+
+        AE_plus_BG = plus_matrix(AE, BG)
+        AF_plus_BH = plus_matrix(AF, BH)
+        CE_plus_DG = plus_matrix(CE, DG)
+        CF_plus_DH = plus_matrix(CF, DH)
+
+        result = merge_matrix(AE_plus_BG, AF_plus_BH, CE_plus_DG,
+                              CF_plus_DH)
+        return result
+
 
 
 def printer(matrix):
@@ -134,8 +215,9 @@ def printer(matrix):
 
 
 if __name__ == "__main__":
-    size = 64
-    m1 = [[random.randint(1, 11) for j in range(size)] for i in range(size)]
-    m2 = [[random.randint(1, 11) for j in range(size - size // 2)] for i in range(size)]
+    size = 4
+    m1 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
+    m2 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     E = [[0 if j != i else 1 for j in range(size)] for i in range(size)]
     get_time([classic_mult_matrix], matrix1=m1, matrix2=E)
+
