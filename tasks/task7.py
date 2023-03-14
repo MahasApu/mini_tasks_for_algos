@@ -1,20 +1,10 @@
-
-def swap(arr, ind1, ind2):
+def swap(arr: list, ind1: int, ind2: int):
     temp = arr[ind1]
     arr[ind1] = arr[ind2]
     arr[ind2] = temp
 
 
-def insertion_sort(arr: list, start: int, end: int):
-    for i in range(start + 1, end + 1):
-        j = i
-        while j > start and arr[j - 1] > arr[j]:
-            swap(arr, j - 1, j)
-            j -= 1
-
-
-def merge(arr, start1, end1, start2, end2, buff1, buff2):
-
+def merge(arr: list, start1: int, end1: int, start2: int, end2: int, buff1: int, buff2: int):
     i, j, k = start1, start2, buff1
     while i <= end1 and j <= end2 and k <= buff2:
 
@@ -37,9 +27,7 @@ def merge(arr, start1, end1, start2, end2, buff1, buff2):
         j += 1
 
 
-def merge_sort(array, start, end, buff1, buff2):
-    if end - start <= 0:
-        return
+def merge_sort(array: list, start: int, end: int, buff1: int, buff2: int):
     if end - start > 0:
         middle = start + (end - start) // 2
         merge_in_place(array, start, middle)
@@ -47,10 +35,18 @@ def merge_sort(array, start, end, buff1, buff2):
         merge(array, start, middle, middle + 1, end, buff1, buff2)
 
 
-def merge_in_place(arr, start, end):
+def merge_in_place(arr: list, start: int, end: int):
     middle = start + (end - start - 1) // 2
+    merge_sort(arr, start, middle, middle + 1, end)
+    pivot = middle
 
-    if middle - start < 2:
+    while pivot > start:
+        mid = start + (pivot - start - 1) // 2
+        merge_sort(arr, mid, pivot, start, mid)
+        merge(arr, start, mid, pivot + 1, end, mid + 1, end)
+        pivot = mid
+
+    if pivot <= start:
         for i in range(start, end + 1):
             j = i
             while j > start and arr[j - 1] > arr[j]:
@@ -58,25 +54,13 @@ def merge_in_place(arr, start, end):
                 j -= 1
 
 
-    if middle - start >= 2:
-        pivot = middle
-        merge_sort(arr, start, middle, middle + 1, end)
-        while pivot > start + 1:
-
-            mid = start + (pivot - start - 1) // 2
-            merge_sort(arr, mid + 1, pivot, start, mid)
-            merge(arr, start, mid, pivot + 1, end, mid + 1, end)
-            pivot = mid
-
-
-def printer(arr):
+def printer(arr: list):
     merge_in_place(arr, 0, len(arr) - 1)
-    # merge(arr,0, len(arr))
     print(arr)
 
 
 if __name__ == "__main__":
-    arr1 = [11,55, 4545, 342, 31, 35, 3, 6, 34, 4, 2, 33, 56, 7, 7, 45, 4, 55, 34, 22, 42, 1, 453, 34, 111,
+    arr1 = [11, 55, 4545, 342, 31, 35, 3, 6, 34, 4, 2, 33, 56, 7, 7, 45, 4, 55, 34, 22, 42, 1, 453, 34, 111,
             2, 56, 5, 879, 8, 7, 556, 3, 34, 34, 22, 3, 45, 3, -11, 5, 6, 56, 7, -12, 99, 7879, 4, 3, 4, 5, 4, 3, 9]
 
     arr2 = [607, 641, 431, 614, 438, -28, 326, -32, 609, 963, 943, 156, -63, 103, 465, 828, 70, 566, 260, 765, 540, -64,
