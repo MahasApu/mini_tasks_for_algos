@@ -1,7 +1,5 @@
 import random
 from benchmarker import format_table
-import types
-
 from time import time
 
 
