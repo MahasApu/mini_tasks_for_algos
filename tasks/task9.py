@@ -5,27 +5,26 @@ import types
 from time import time
 
 
-def get_time(funcs, **kwargs):
+def get_time(funcs, *args):
     times = 10
-
-    def time_wrapper(func, **kwargs):
+    def time_wrapper(func, *args):
         start_time = time()
-        func(kwargs)
+        func(args)
         end_time = time()
         total_time = end_time - start_time
         return total_time
 
-    def sample_mean(func, **kwargs):
+    def sample_mean(func, *args):
         counter, summ = 1, 0
         while counter <= times:
-            summ += time_wrapper(func, **kwargs)
+            summ += time_wrapper(func, *args)
             counter += 1
-        return f'{(summ / times):.5f}s'
+        return f'{(summ / times):.7f}s'
 
-    def standard_deviation(func, **kwargs):
+    def standard_deviation(func, *args):
         counter, summ, summ_2 = 1, 0, 0
         while counter <= times:
-            exec_time = time_wrapper(func, **kwargs)
+            exec_time = time_wrapper(func, *args)
             summ += exec_time
             summ_2 += exec_time ** 2
             counter += 1
@@ -33,22 +32,22 @@ def get_time(funcs, **kwargs):
         pivot = summ / times
         pivot_quadr = summ_2 / times
         deviation = (pivot_quadr - pivot ** 2) ** 0.5
-        return f'{(deviation):.5f}s'
+        return f'{(deviation):.7f}s'
 
-    def geometric_mean(func, **kwargs):
+    def geometric_mean(func, *args):
         counter, product = 1, 1
         power = 1 / times
         while counter <= times:
-            product *= time_wrapper(func, **kwargs)
+            product *= time_wrapper(func, *args)
             counter += 1
         result = product ** power
-        return f'{(result):.5f}s'
+        return f'{(result):.7f}s'
 
     result = []
     for func in funcs:
-        result.append([sample_mean(func, **kwargs), standard_deviation(func, **kwargs), geometric_mean(func, **kwargs)])
+        result.append([sample_mean(func, *args), standard_deviation(func, *args), geometric_mean(func, *args)])
 
-    format_table(benchmarks=['naive matrix mult'],
+    format_table(benchmarks=['naive matrix mult', 'quick matrix mult', 'strassen algorithm'],
                  algos=['sample mean', 'standard deviation', 'geometric mean'],
                  results=result)
 
@@ -159,9 +158,11 @@ def merge_matrix(matrix_11, matrix_12, matrix_21, matrix_22):
     return matrix_total
 
 
-def classic_mult_matrix(kwargs):
-    matrix1 = kwargs['matrix1']
-    matrix2 = kwargs['matrix2']
+def classic_mult_matrix(args):
+    if isinstance(args, tuple):
+        matrix1 = args[0]
+        matrix2 = args[1]
+    else: return
 
     row_len1 = len(matrix1[0])
     column_len1 = len(matrix1)
@@ -188,26 +189,33 @@ def extend_matrix_size(matrix):
     return power_two
 
 
-def quick_mult_matrix(matrix1, matrix2):
+def quick_mult_matrix(args):
+    if isinstance(args, tuple):
+        matrix1 = args[0]
+        matrix2 = args[1]
+    else: return
+
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
 
     assert column_len1 == column_len2
 
-    if column_len1 == 1:
+    if column_len1 == 1 and column_len2 == 1:
         return [matrix1[0][0] * matrix2[0][0]]
+    elif column_len1 <= 128 and column_len2 <= 128:
+        return mult_matrix(matrix1, matrix2)
     else:
         A, B, C, D = divide_matrix(matrix1)
         E, F, G, H = divide_matrix(matrix2)
 
-        AE = quick_mult_matrix(A, E)
-        BG = quick_mult_matrix(B, G)
-        AF = quick_mult_matrix(A, F)
-        BH = quick_mult_matrix(B, H)
-        CE = quick_mult_matrix(C, E)
-        DG = quick_mult_matrix(D, G)
-        CF = quick_mult_matrix(C, F)
-        DH = quick_mult_matrix(D, H)
+        AE = quick_mult_matrix((A, E))
+        BG = quick_mult_matrix((B, G))
+        AF = quick_mult_matrix((A, F))
+        BH = quick_mult_matrix((B, H))
+        CE = quick_mult_matrix((C, E))
+        DG = quick_mult_matrix((D, G))
+        CF = quick_mult_matrix((C, F))
+        DH = quick_mult_matrix((D, H))
 
         AE_plus_BG = plus_matrix(AE, BG)
         AF_plus_BH = plus_matrix(AF, BH)
@@ -219,7 +227,12 @@ def quick_mult_matrix(matrix1, matrix2):
         return result
 
 
-def strassen_algorithm(matrix1, matrix2):
+def strassen_algorithm(args):
+    if isinstance(args, tuple):
+        matrix1 = args[0]
+        matrix2 = args[1]
+    else: return
+
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
 
@@ -227,6 +240,8 @@ def strassen_algorithm(matrix1, matrix2):
 
     if column_len1 == 1 and column_len2 == 1:
         return [matrix1[0][0] * matrix2[0][0]]
+    elif column_len1 <= 128 and column_len2 <= 128:
+        return mult_matrix(matrix1, matrix2)
 
 
     else:
@@ -244,13 +259,13 @@ def strassen_algorithm(matrix1, matrix2):
         A_C = minus_matrix(A, C)
         E_F = plus_matrix(E, F)
 
-        P1 = strassen_algorithm(A, F_H)
-        P2 = strassen_algorithm(A_B, H)
-        P3 = strassen_algorithm(C_D, E)
-        P4 = strassen_algorithm(D, G_E)
-        P5 = strassen_algorithm(A_D, E_H)
-        P6 = strassen_algorithm(B_D, G_H)
-        P7 = strassen_algorithm(A_C, E_F)
+        P1 = strassen_algorithm((A, F_H))
+        P2 = strassen_algorithm((A_B, H))
+        P3 = strassen_algorithm((C_D, E))
+        P4 = strassen_algorithm((D, G_E))
+        P5 = strassen_algorithm((A_D, E_H))
+        P6 = strassen_algorithm((B_D, G_H))
+        P7 = strassen_algorithm((A_C, E_F))
 
         Q1 = plus_matrix(plus_matrix(P5, P4), minus_matrix(P6, P2))
         Q2 = plus_matrix(P1, P2)
@@ -267,12 +282,10 @@ def printer(matrix):
 
 
 if __name__ == "__main__":
-    size = 4
+    size = 512
     m1 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     m2 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     E = [[0 if j != i else 1 for j in range(size)] for i in range(size)]
-    get_time([classic_mult_matrix], matrix1=m1, matrix2=m2)
+    get_time([classic_mult_matrix, quick_mult_matrix, strassen_algorithm], m1, m2)
 
-    printer(mult_matrix(m1, m2))
-    printer(quick_mult_matrix(m1, m2))
-    printer(strassen_algorithm(m1, m2))
+
