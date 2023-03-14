@@ -202,7 +202,7 @@ def quick_mult_matrix(args):
 
     if column_len1 == 1 and column_len2 == 1:
         return [matrix1[0][0] * matrix2[0][0]]
-    elif column_len1 <= 128 and column_len2 <= 128:
+    elif column_len1 <= 64 and column_len2 <= 64:
         return mult_matrix(matrix1, matrix2)
     else:
         A, B, C, D = divide_matrix(matrix1)
@@ -240,7 +240,7 @@ def strassen_algorithm(args):
 
     if column_len1 == 1 and column_len2 == 1:
         return [matrix1[0][0] * matrix2[0][0]]
-    elif column_len1 <= 128 and column_len2 <= 128:
+    elif column_len1 <= 64 and column_len2 <= 64:
         return mult_matrix(matrix1, matrix2)
 
 
@@ -272,8 +272,8 @@ def strassen_algorithm(args):
         Q3 = plus_matrix(P3, P4)
         Q4 = plus_matrix(minus_matrix(P1, P3), minus_matrix(P5, P7))
 
-        result = merge_matrix(Q1, Q2, Q3, Q4)
-        return result
+        return merge_matrix(Q1, Q2, Q3, Q4)
+
 
 
 def printer(matrix):
