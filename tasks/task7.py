@@ -1,10 +1,11 @@
-def swap(arr: list, ind1: int, ind2: int):
+from typing import List
+def swap(arr: List, ind1: int, ind2: int):
     temp = arr[ind1]
     arr[ind1] = arr[ind2]
     arr[ind2] = temp
 
 
-def merge(arr: list, start1: int, end1: int, start2: int, end2: int, buff1: int, buff2: int):
+def merge(arr: List, start1: int, end1: int, start2: int, end2: int, buff1: int, buff2: int):
     i, j, k = start1, start2, buff1
     while i <= end1 and j <= end2 and k <= buff2:
 
@@ -27,7 +28,7 @@ def merge(arr: list, start1: int, end1: int, start2: int, end2: int, buff1: int,
         j += 1
 
 
-def merge_sort(array: list, start: int, end: int, buff1: int, buff2: int):
+def merge_sort(array: List, start: int, end: int, buff1: int, buff2: int):
     if end - start > 0:
         middle = start + (end - start) // 2
         merge_in_place(array, start, middle)
@@ -35,7 +36,7 @@ def merge_sort(array: list, start: int, end: int, buff1: int, buff2: int):
         merge(array, start, middle, middle + 1, end, buff1, buff2)
 
 
-def merge_in_place(arr: list, start: int, end: int):
+def merge_in_place(arr: List, start: int, end: int):
     middle = start + (end - start - 1) // 2
     merge_sort(arr, start, middle, middle + 1, end)
     pivot = middle
@@ -54,7 +55,7 @@ def merge_in_place(arr: list, start: int, end: int):
                 j -= 1
 
 
-def printer(arr: list):
+def printer(arr: List):
     merge_in_place(arr, 0, len(arr) - 1)
     print(arr)
 
