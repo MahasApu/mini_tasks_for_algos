@@ -7,13 +7,9 @@ def counting_sort(words, pos):
     for word in words:
         buffer[ord(word[pos])] += 1
 
-
     for i in range(ascii_len - 1, -1, -1):
-        # print(amount, 'before')
         amount -= buffer[i]
-        # print(amount,'after')
         buffer[i] = amount
-
 
     for word in words:
         result[buffer[ord(word[pos])]] = word
