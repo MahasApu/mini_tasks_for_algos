@@ -1,4 +1,5 @@
 from typing import List
+import random
 def swap(arr: List, ind1: int, ind2: int):
     temp = arr[ind1]
     arr[ind1] = arr[ind2]
@@ -29,6 +30,12 @@ def merge(arr: List, start1: int, end1: int, start2: int, end2: int, buff1: int,
 
 
 def merge_sort(array: List, start: int, end: int, buff1: int, buff2: int):
+
+    if end - start <= 1:
+        if array[start] > array[end]:
+            swap(array, start, end )
+        return
+
     if end - start > 0:
         middle = start + (end - start) // 2
         merge_in_place(array, start, middle)
@@ -69,4 +76,6 @@ if __name__ == "__main__":
     arr = [2, 1, 0, 8, 22, 12, 1, 0, 9, 13, 7, 88, 3, 99, 23, 9, 0]
     arr0 = [1, 13, 99, 51, 28, 91, 30, 34, 111, 56, 22, 37, 12, 1, 5, 15, 60]
     arr4 = [1, 13, 28, 51, 99, 30, 34, 91, 111, 121, 23, 56, 22, 37, 12, 1, 5, 15, 60]
-    printer(arr2)
+    size = 1024
+    arr5 = [random.randint(-100, 100) for j in range(size)]
+    printer(arr5)
