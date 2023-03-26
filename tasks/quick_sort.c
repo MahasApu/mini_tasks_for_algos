@@ -26,10 +26,10 @@ void swap(int* nums, int ind1, int ind2);
 
 #define QUICK_SORT(partition)                        \
 void quick_sort_##partition(int* arr, size_t start, size_t end) {       \
-    if (end <= start) return 0;                                         \
+    if (end <= start) return;                                           \
     if (end == start + 1) {                                             \
         if (arr[start] > arr[end]) swap(arr, start, end);               \
-        return 0;                                                       \
+        return;                                                         \
     }                                                                   \
     if (start < end) {                                                  \
         size_t pivot = ##partition(arr, start, end);                    \
