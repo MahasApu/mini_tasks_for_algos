@@ -1,6 +1,9 @@
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <assert.h>
 
 
 // Null checks
@@ -18,22 +21,17 @@ NULL_CHECK(void, "Out of memory!");
 NULL_CHECK(FILE, "File cannot be opened");
 
 
-size_t branchfree_lomuto_partition(int* arr, size_t start, size_t end);
-size_t classic_lomuto_partition(int* arr, size_t start, size_t end);
-size_t hoare_partition(int* arr, size_t start, size_t end);
+int branchfree_lomuto_partition(int* arr, int start, int end);
+int classic_lomuto_partition(int* arr, int start, int end);
+int hoare_partition(int* arr, int start, int end);
 void swap(int* nums, int ind1, int ind2);
 
 
-#define QUICK_SORT(partition)                        \
-void quick_sort_##partition(int* arr, size_t start, size_t end) {       \
-    if (end <= start) return;                                           \
-    if (end == start + 1) {                                             \
-        if (arr[start] > arr[end]) swap(arr, start, end);               \
-        return;                                                         \
-    }                                                                   \
+#define QUICK_SORT(partition)                                           \
+void quick_sort_##partition(int* arr, int start, int end) {             \
     if (start < end) {                                                  \
-        size_t pivot = ##partition(arr, start, end);                    \
-        quick_sort_##partition(arr, start, pivot);                      \
+        int pivot = ##partition(arr, start, end);                       \
+        quick_sort_##partition(arr, start, pivot - 1);                  \
         quick_sort_##partition(arr, pivot + 1, end);                    \
     }                                                                   \
 }                                                                       \
@@ -45,39 +43,40 @@ QUICK_SORT(branchfree_lomuto_partition);
 
 void rand_array(int* arr, int len) {
     srand(time(NULL));
-    for (size_t i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
         int r = rand() % 100;
         arr[i] = r;
     }
 }
 
 
-void printArr(int* arr, size_t len) {
-    for (size_t i = 0; i < len;i++) {
+void printArr(int* arr, int len) {
+    for (int i = 0; i < len;i++) {
         printf("%d ", arr[i]);
     }
 }
 
 
-void swap(int* nums, int ind1, int ind2) {
+void swap(int* ind1, int* ind2) {
 
-    int tmp;
-    tmp = nums[ind1];
-    nums[ind1] = nums[ind2];
-    nums[ind2] = tmp;
+    int tmp = *ind1;
+    *ind1 = *ind2;
+    *ind2 = tmp;
 }
 
 
-size_t hoare_partition(int* arr, size_t start, size_t end) {
 
-    size_t pivot_index = start + (rand() % (end - start));
+
+int hoare_partition(int* arr, int start, int end) {
+
+    int pivot_index = start + (rand() % (end - start));
     if (pivot_index != start) {
-        swap(arr, pivot_index, start);
+        swap(&arr[pivot_index], &arr[start]);
     }
 
     int pivot_value = arr[start];
-    size_t i = start + 1;
-    size_t j = end - 1;
+    int i = start + 1;
+    int j = end;
 
     while (1) {
         while (arr[i] < pivot_value) {
@@ -87,75 +86,155 @@ size_t hoare_partition(int* arr, size_t start, size_t end) {
             j--;
         }
         if (i >= j) break;
-        swap(arr, i++, j--);
+        swap(&arr[i++], &arr[j--]);
     }
-    swap(arr, start, j);
+    swap(&arr[start], &arr[j]);
     return j;
-
-
 }
 
-size_t branchfree_lomuto_partition(int* arr, size_t start, size_t end) {
 
-    size_t pivot_index = start;
+
+
+
+int branchfree_lomuto_partition(int* arr, int start, int end) {
+
+    if (end  <= start) {
+        return start;
+    }
+    else if (end - start < 2) {
+        return start;
+    }
+
+    if (arr[start] > arr[end]) {
+        swap(&arr[start], &arr[end]);
+    }
+
+
+    int pivot_index = start;
     int pivot_value = arr[start];
-    
+
     do {
         start++;
-    } while (arr[start] < pivot_value && start <= end);
 
-    for (size_t i = start; i < end; i++) {
+    } while (arr[start] < pivot_value);
+
+    for (int i = start + 1; i < end; i++) {
+
         int tmp = arr[i];
-        int smaller = - (int) (tmp < pivot_value);
+        int smaller = -(int)(tmp < pivot_value);
         int delta = smaller & (i - start);
 
         arr[start + delta] = arr[start];
         arr[i - delta] = tmp;
         start -= smaller;
     }
-
     start--;
     arr[pivot_index] = arr[start];
     arr[start] = pivot_value;
     return start;
-
-
 }
 
-size_t classic_lomuto_partition(int* arr, size_t start, size_t end) {
+int classic_lomuto_partition(int* arr, int start, int end) {
 
-
-    size_t pivot_index = start + (rand() % (end - start));
-    if (pivot_index != start) {
-        swap(arr, pivot_index, start);
+    if (end - start <= 0) {
+        return start;
     }
+    if (end - start == 1) {
+        if (arr[start] > arr[end]) {
+            swap(&arr[start], &arr[end]);
+        }
+        return start;
+    }
+
+    int pivot_index = start + rand() % (end - start);
+    swap(&arr[pivot_index], &arr[start]);
 
     int pivot_value = arr[start];
-    size_t i = start;
+    int j = start;
 
-    for (size_t j = start ; j < end; j++) {
-        if (arr[j] < pivot_value) {
-            i++;
-            swap(arr, i, j);
+    for (int i = start + 1; i <= end; i++) {
+        if (arr[i] < pivot_value) {
+            j++;
+            swap(&arr[i], &arr[j]);
+        }
+
+        else if (arr[i] == arr[start]) {
+            if (rand() % 3 == 0) {
+                j++;
+                swap(&arr[i], &arr[j]);
+            }
         }
     }
-    swap(arr, i, start);
-    return i;
+    swap(&arr[j], &arr[start]);
+
+    return j;
 }
 
 
- 
 int main() {
 
-    size_t len = 1003;
-    int* array = (int*)malloc(len * sizeof(int));
+    int len = 10000000;
+    int* array1 = (int*)malloc(len * sizeof(int));
+    nullCheck_void(array1);
+    rand_array(array1, len);
 
-    nullCheck_void(array);
+    int* array2 = (int*)malloc(len * sizeof(int));
+    nullCheck_void(array2);
 
-    rand_array(array, len);
-    
-    quick_sort_hoare_partition(array, 0, len - 1);
 
-    printArr(array, len);
-    free(array);
+    for (size_t i = 0; i < len; i++) {
+        array2[i] = array1[i];
+    }
+
+    FILE* output_file = fopen("output.txt", "w+");
+    nullCheck_FILE(output_file);
+
+    size_t times = 5;
+
+    /* for Hoare partition */
+    for (size_t i = 0; i < times; i++) {
+
+        clock_t start = clock();
+        quick_sort_hoare_partition(array1, 0, len - 1);
+        clock_t end = clock();
+        double spent_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+        fprintf(output_file, "%f ", spent_time);
+    }
+
+
+    fprintf(output_file, "\n");
+
+    /* for classic Lomuto partition */
+    for (size_t i = 0; i < times; i++) {
+
+        clock_t start = clock();
+        quick_sort_classic_lomuto_partition(array2, 0, len - 1);
+        clock_t end = clock();
+        double spent_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+        fprintf(output_file, "%f ", spent_time);
+    }
+
+    fprintf(output_file, "\n");
+
+
+    //
+    ///* for branch-free Lomuto partition */
+    //for (size_t i = 0; i < times; i++) {
+
+    //    clock_t start = clock();
+    //    quick_sort_branchfree_lomuto_partition(array1, 0, len - 1);
+    //    clock_t end = clock();
+    //    double spent_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+    //    fprintf(output_file, "%f ", spent_time);
+    //}
+
+
+
+    fclose(output_file);
+    // printArr(array, len);
+    free(array1);
+    free(array2);
 }
