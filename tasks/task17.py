@@ -1,3 +1,5 @@
+from typing import Optional
+
 
 # Definition for singly-linked list.
 class ListNode:
@@ -5,24 +7,29 @@ class ListNode:
         self.val = val
         self.next = next
 
+
 class Solution:
-    def reverseBetween(self, head, left: int, right: int):
+
+    def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
 
         if left == right:
             return head
 
-        node = ListNode()
-        node.next = head
-        tmp = node
+        node_prev = None
+        node = head
 
         for i in range(left - 1):
-            tmp = tmp.next
+            node_prev = node
+            node = node.next
 
-        current = tmp.next
+        prev = node
+        cur = node.next
         for j in range(right - left):
-            t = current.next
-            current.next = t.next
-            t.next = tmp.next
-            tmp.next = t
+            cur.next, prev, cur = prev, cur, cur.next
 
-        return node.next
+        node.next = cur
+        if node_prev:
+            node_prev.next = prev
+            prev = head
+
+        return prev
