@@ -4,45 +4,66 @@ from time import time
 
 
 def get_time(funcs, *args):
-    times = 10
+
+    times = 3
+
     def time_wrapper(func, *args):
+
         start_time = time()
         func(args)
         end_time = time()
         total_time = end_time - start_time
+        print(total_time)
         return total_time
 
     def sample_mean(func, *args):
         counter, summ = 1, 0
+
         while counter <= times:
-            summ += time_wrapper(func, *args)
-            counter += 1
-        return f'{(summ / times):.7f}s'
+            print("sample counter", counter)
+            if counter < 2:
+                time_wrapper(func, *args)
+                counter += 1
+            else:
+                summ += time_wrapper(func, *args)
+                counter += 1
+        return f'{(summ / (times - 1)):.7f}s'
 
     def standard_deviation(func, *args):
         counter, summ, summ_2 = 1, 0, 0
         while counter <= times:
-            exec_time = time_wrapper(func, *args)
-            summ += exec_time
-            summ_2 += exec_time ** 2
-            counter += 1
+            print("standard counter", counter)
+            if counter < 2:
+                time_wrapper(func, *args)
+                counter += 1
+            else:
+                exec_time = time_wrapper(func, *args)
+                summ += exec_time
+                summ_2 += exec_time ** 2
+                counter += 1
 
-        pivot = summ / times
-        pivot_quadr = summ_2 / times
+        pivot = summ / (times - 1)
+        pivot_quadr = summ_2 / (times - 1)
         deviation = (pivot_quadr - pivot ** 2) ** 0.5
         return f'{(deviation):.7f}s'
 
     def geometric_mean(func, *args):
         counter, product = 1, 1
-        power = 1 / times
+        power = 1 / (times - 1)
         while counter <= times:
-            product *= time_wrapper(func, *args)
-            counter += 1
+            print("geom counter", counter)
+            if counter < 2:
+                time_wrapper(func, *args)
+                counter += 1
+            else:
+                product *= time_wrapper(func, *args)
+                counter += 1
         result = product ** power
         return f'{(result):.7f}s'
 
     result = []
     for func in funcs:
+        print("{func}".format(func=func))
         result.append([sample_mean(func, *args), standard_deviation(func, *args), geometric_mean(func, *args)])
 
     format_table(benchmarks=['naive matrix mult', 'quick matrix mult', 'strassen algorithm'],
@@ -160,7 +181,8 @@ def classic_mult_matrix(args):
     if isinstance(args, tuple):
         matrix1 = args[0]
         matrix2 = args[1]
-    else: return
+    else:
+        return
 
     row_len1 = len(matrix1[0])
     column_len1 = len(matrix1)
@@ -191,7 +213,8 @@ def quick_mult_matrix(args):
     if isinstance(args, tuple):
         matrix1 = args[0]
         matrix2 = args[1]
-    else: return
+    else:
+        return
 
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
@@ -229,7 +252,8 @@ def strassen_algorithm(args):
     if isinstance(args, tuple):
         matrix1 = args[0]
         matrix2 = args[1]
-    else: return
+    else:
+        return
 
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
@@ -273,17 +297,14 @@ def strassen_algorithm(args):
         return merge_matrix(Q1, Q2, Q3, Q4)
 
 
-
 def printer(matrix):
     for i in range(len(matrix)):
         print(matrix[i])
 
 
 if __name__ == "__main__":
-    size = 512
+    size = 2048
     m1 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     m2 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     E = [[0 if j != i else 1 for j in range(size)] for i in range(size)]
     get_time([classic_mult_matrix, quick_mult_matrix, strassen_algorithm], m1, m2)
-
-
