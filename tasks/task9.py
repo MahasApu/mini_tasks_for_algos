@@ -4,50 +4,67 @@ from time import time
 
 
 def get_time(funcs, *args):
-    times = 10
+    times = 4
+
     def time_wrapper(func, *args):
         start_time = time()
         func(args)
         end_time = time()
         total_time = end_time - start_time
+        print(total_time)
         return total_time
 
-    def sample_mean(func, *args):
-        counter, summ = 1, 0
-        while counter <= times:
-            summ += time_wrapper(func, *args)
+    def sample_mean(results):
+        counter, summ = 0, 0
+        while counter < times:
+            if counter:
+                summ += results[counter]
             counter += 1
-        return f'{(summ / times):.7f}s'
+        return f'{(summ / (times - 1)):.7f}s'
 
-    def standard_deviation(func, *args):
-        counter, summ, summ_2 = 1, 0, 0
-        while counter <= times:
-            exec_time = time_wrapper(func, *args)
-            summ += exec_time
-            summ_2 += exec_time ** 2
+    def standard_deviation(results):
+        counter, summ, summ_2 = 0, 0, 0
+        while counter < times:
+            if counter:
+                exec_time = results[counter]
+                summ += exec_time
+                summ_2 += exec_time ** 2
             counter += 1
 
-        pivot = summ / times
-        pivot_quadr = summ_2 / times
+        pivot = summ / (times - 1)
+        pivot_quadr = summ_2 / (times - 1)
         deviation = (pivot_quadr - pivot ** 2) ** 0.5
         return f'{(deviation):.7f}s'
 
-    def geometric_mean(func, *args):
-        counter, product = 1, 1
-        power = 1 / times
-        while counter <= times:
-            product *= time_wrapper(func, *args)
+    def geometric_mean(results):
+        counter, product = 0, 1
+        power = 1 / (times - 1)
+        while counter < times:
+            if counter:
+                product *= results[counter]
             counter += 1
         result = product ** power
         return f'{(result):.7f}s'
 
-    result = []
+    results = []
     for func in funcs:
-        result.append([sample_mean(func, *args), standard_deviation(func, *args), geometric_mean(func, *args)])
+        benchmarks = []
+        for i in range(times):
+            benchmarks.append(time_wrapper(func, *args))
+        results.append(benchmarks)
+        # result.append([sample_mean(func, *args), standard_deviation(func, *args), geometric_mean(func, *args)])
+
+    final_result = []
+    count = 0
+    for i in funcs:
+        print(results[count])
+        final_result.append(
+            [sample_mean(results[count]), standard_deviation(results[count]), geometric_mean(results[count])])
+        count += 1
 
     format_table(benchmarks=['naive matrix mult', 'quick matrix mult', 'strassen algorithm'],
                  algos=['sample mean', 'standard deviation', 'geometric mean'],
-                 results=result)
+                 results=final_result)
 
 
 '''
@@ -160,7 +177,8 @@ def classic_mult_matrix(args):
     if isinstance(args, tuple):
         matrix1 = args[0]
         matrix2 = args[1]
-    else: return
+    else:
+        return
 
     row_len1 = len(matrix1[0])
     column_len1 = len(matrix1)
@@ -191,7 +209,8 @@ def quick_mult_matrix(args):
     if isinstance(args, tuple):
         matrix1 = args[0]
         matrix2 = args[1]
-    else: return
+    else:
+        return
 
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
@@ -229,7 +248,8 @@ def strassen_algorithm(args):
     if isinstance(args, tuple):
         matrix1 = args[0]
         matrix2 = args[1]
-    else: return
+    else:
+        return
 
     column_len1 = len(matrix1)
     column_len2 = len(matrix2)
@@ -273,17 +293,36 @@ def strassen_algorithm(args):
         return merge_matrix(Q1, Q2, Q3, Q4)
 
 
-
 def printer(matrix):
     for i in range(len(matrix)):
         print(matrix[i])
 
 
 if __name__ == "__main__":
-    size = 512
+    size = 2048
     m1 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     m2 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     E = [[0 if j != i else 1 for j in range(size)] for i in range(size)]
     get_time([classic_mult_matrix, quick_mult_matrix, strassen_algorithm], m1, m2)
 
 
+# 75.92841386795044
+# 75.4308431148529
+# 75.54054594039917
+# 82.62533807754517
+
+# 44.869778871536255
+# 44.0232880115509
+# 43.65003800392151
+# 43.25431299209595
+
+# 26.184720993041992
+# 25.927408933639526
+# 25.87090516090393
+# 25.967639923095703
+
+# | Benchmark          | sample mean | standard deviation | geometric mean |
+# | ---------------------------------------------------------------------- |
+# | naive matrix mult  | 77.8655757s | 3.3659582s         | 77.7942402s    |
+# | quick matrix mult  | 43.6425463s | 0.3139774s         | 43.6414167s    |
+# | strassen algorithm | 25.9219847s | 0.0396776s         | 25.9219543s    |
