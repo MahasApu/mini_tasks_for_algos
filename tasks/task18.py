@@ -8,8 +8,9 @@ with open(r"C:\Users\vaskm\PycharmProjects\tasks_for_algos\tasks\input_task18.tx
 
 def ret_priority(operator: str) -> int:
     operator_priority = {
-        "(": 0,
-        ")": 1,
+        "(": -1,
+        ")": 0,
+        "^": 1,
         "*": 2, "/": 2, "%": 2,
         "+": 3, "-": 3,
         "<<": 4, ">>": 4,
@@ -18,7 +19,6 @@ def ret_priority(operator: str) -> int:
         "|": 7,
         "&&": 8,
         "||": 9,
-        "^": 10
     }
     return operator_priority[operator]
 
