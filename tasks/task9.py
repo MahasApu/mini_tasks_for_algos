@@ -52,12 +52,10 @@ def get_time(funcs, *args):
         for i in range(times):
             benchmarks.append(time_wrapper(func, *args))
         results.append(benchmarks)
-        # result.append([sample_mean(func, *args), standard_deviation(func, *args), geometric_mean(func, *args)])
 
     final_result = []
     count = 0
     for i in funcs:
-        print(results[count])
         final_result.append(
             [sample_mean(results[count]), standard_deviation(results[count]), geometric_mean(results[count])])
         count += 1
@@ -306,23 +304,23 @@ if __name__ == "__main__":
     get_time([classic_mult_matrix, quick_mult_matrix, strassen_algorithm], m1, m2)
 
 
-# 75.92841386795044
-# 75.4308431148529
-# 75.54054594039917
-# 82.62533807754517
+# 76.20209002494812
+# 77.11890697479248
+# 76.74200296401978
+# 76.18999695777893
 
-# 44.869778871536255
-# 44.0232880115509
-# 43.65003800392151
-# 43.25431299209595
+# 43.22409415245056
+# 42.53991079330444
+# 41.9989960193634
+# 41.94500207901001
 
-# 26.184720993041992
-# 25.927408933639526
-# 25.87090516090393
-# 25.967639923095703
+# 25.234081983566284
+# 25.130918979644775
+# 25.253080129623413
+# 25.173916816711426
 
 # | Benchmark          | sample mean | standard deviation | geometric mean |
 # | ---------------------------------------------------------------------- |
-# | naive matrix mult  | 77.8655757s | 3.3659582s         | 77.7942402s    |
-# | quick matrix mult  | 43.6425463s | 0.3139774s         | 43.6414167s    |
-# | strassen algorithm | 25.9219847s | 0.0396776s         | 25.9219543s    |
+# | naive matrix mult  | 76.6836356s | 0.3814652s         | 76.6826861s    |
+# | quick matrix mult  | 42.1613030s | 0.2686221s         | 42.1604497s    |
+# | strassen algorithm | 25.1859720s | 0.0505953s         | 25.1859212s    |
