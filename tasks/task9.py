@@ -4,71 +4,65 @@ from time import time
 
 
 def get_time(funcs, *args):
-
-    times = 3
+    times = 4
 
     def time_wrapper(func, *args):
-
         start_time = time()
         func(args)
         end_time = time()
         total_time = end_time - start_time
-        print(total_time)
         return total_time
 
-    def sample_mean(func, *args):
-        counter, summ = 1, 0
 
-        while counter <= times:
-            print("sample counter", counter)
-            if counter < 2:
-                time_wrapper(func, *args)
-                counter += 1
-            else:
-                summ += time_wrapper(func, *args)
-                counter += 1
+    def sample_mean(results):
+        counter, summ = 0, 0
+        while counter < times:
+            if counter:
+                summ += results[counter]
+            counter += 1
         return f'{(summ / (times - 1)):.7f}s'
 
-    def standard_deviation(func, *args):
-        counter, summ, summ_2 = 1, 0, 0
-        while counter <= times:
-            print("standard counter", counter)
-            if counter < 2:
-                time_wrapper(func, *args)
-                counter += 1
-            else:
-                exec_time = time_wrapper(func, *args)
+    def standard_deviation(results):
+        counter, summ, summ_2 = 0, 0, 0
+        while counter < times:
+            if counter:
+                exec_time = results[counter]
                 summ += exec_time
                 summ_2 += exec_time ** 2
-                counter += 1
+            counter += 1
 
         pivot = summ / (times - 1)
         pivot_quadr = summ_2 / (times - 1)
         deviation = (pivot_quadr - pivot ** 2) ** 0.5
         return f'{(deviation):.7f}s'
 
-    def geometric_mean(func, *args):
-        counter, product = 1, 1
+    def geometric_mean(results):
+        counter, product = 0, 1
         power = 1 / (times - 1)
-        while counter <= times:
-            print("geom counter", counter)
-            if counter < 2:
-                time_wrapper(func, *args)
-                counter += 1
-            else:
-                product *= time_wrapper(func, *args)
-                counter += 1
+        while counter < times:
+            if counter:
+                product *= results[counter]
+            counter += 1
         result = product ** power
         return f'{(result):.7f}s'
 
-    result = []
+    results = []
     for func in funcs:
-        print("{func}".format(func=func))
-        result.append([sample_mean(func, *args), standard_deviation(func, *args), geometric_mean(func, *args)])
+        benchmarks = []
+        for i in range(times):
+            benchmarks.append(time_wrapper(func, *args))
+        results.append(benchmarks)
+
+    final_result = []
+    count = 0
+    for i in funcs:
+        final_result.append(
+            [sample_mean(results[count]), standard_deviation(results[count]), geometric_mean(results[count])])
+        count += 1
 
     format_table(benchmarks=['naive matrix mult', 'quick matrix mult', 'strassen algorithm'],
                  algos=['sample mean', 'standard deviation', 'geometric mean'],
-                 results=result)
+                 results=final_result)
 
 
 '''
@@ -308,3 +302,25 @@ if __name__ == "__main__":
     m2 = [[random.randint(1, 2) for j in range(size)] for i in range(size)]
     E = [[0 if j != i else 1 for j in range(size)] for i in range(size)]
     get_time([classic_mult_matrix, quick_mult_matrix, strassen_algorithm], m1, m2)
+
+
+# 76.20209002494812
+# 77.11890697479248
+# 76.74200296401978
+# 76.18999695777893
+
+# 43.22409415245056
+# 42.53991079330444
+# 41.9989960193634
+# 41.94500207901001
+
+# 25.234081983566284
+# 25.130918979644775
+# 25.253080129623413
+# 25.173916816711426
+
+# | Benchmark          | sample mean | standard deviation | geometric mean |
+# | ---------------------------------------------------------------------- |
+# | naive matrix mult  | 76.6836356s | 0.3814652s         | 76.6826861s    |
+# | quick matrix mult  | 42.1613030s | 0.2686221s         | 42.1604497s    |
+# | strassen algorithm | 25.1859720s | 0.0505953s         | 25.1859212s    |
