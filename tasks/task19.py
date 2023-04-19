@@ -85,10 +85,10 @@ class Solution:
         for i in range(len(lists)):
             if lists[i]:
                 heap.insert(i, lists[i].val)
-        res = ListNode()
-        end = res
-        while heap.h_size > -1:
 
+        result = ListNode()
+        end = result
+        while heap.h_size > -1:
             i, val = heap.extract_min()
             end.next = ListNode(val)
             end = end.next
@@ -96,4 +96,4 @@ class Solution:
             if lists[i]:
                 heap.insert(i, lists[i].val)
 
-        return res.next
+        return result.next

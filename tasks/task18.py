@@ -24,7 +24,7 @@ def ret_priority(operator: str) -> int:
 
 
 def to_RPN(expression: List[str]) -> List[str]:
-    right_assoc_operators = {"^"}
+    right_assoc_operators = ["^"]
     all_operators = ["^", "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "&", "|", "&&", "||", ")", "("]
     stack = []
     result = []
