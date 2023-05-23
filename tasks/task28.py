@@ -27,7 +27,7 @@ class BloomFilter(object):
         def funcs_generator(hash_amount: int) -> List[Callable]:
             hash_funcs = []
             for _ in range(hash_amount):
-                c0, c1, c2, c3 = randint(1, 10), randint(1, 10), randint(1, 10), randint(1, 10)
+                c0, c1, c2, c3 = randint(0, 10), randint(0, 10), randint(0, 10), randint(0, 10)
                 hash_funcs.append(hash_func(c0, c1, c2, c3))
             return hash_funcs
 
@@ -45,7 +45,7 @@ class BloomFilter(object):
 
     @classmethod
     def next_prime_num(self, num: int) -> int:
-        i = num
+        i = num + 1
         while True:
             isPrime = True
             d = 2
