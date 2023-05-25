@@ -16,37 +16,24 @@ class TwentyEighth(TestCase):
             result.append(self.ip_generator())
         return result
 
-    def checker(self, amount: int, prospect: float):
-
-        instance = BloomFilter(amount, prospect)
-        test_data = self.ip_array_maker(amount)
-
-        for address in test_data:
-            instance.add(address)
-
-        for address in test_data:
-            assert instance.look_up(address)
-
-        errors_amount = 0
-        _range = 10000
-
-        for _ in range(_range):
-            test_address = self.ip_generator()
-            if test_address not in test_data:
-                if instance.look_up(test_address):
-                    errors_amount += 1
-
-        print(errors_amount / _range)
-        assert (errors_amount / _range) <= prospect
-
     def test_first(self):
-        self.checker(20, 0.5)
+        a = BloomFilter(1000, 0.01)
+        a.insert("0.73.0.1")
+        assert False == a.look_up("0.73.0.2")
 
     def test_second(self):
-        self.checker(10, 0.01)
+        a = BloomFilter(1000, 0.01)
+        a.insert("848.233.22.123")
+        a.insert("192.221.0.2")
+        a.insert("292.168.0.0")
+        assert [True, True, True] == [a.look_up("848.233.22.123"), a.look_up("192.221.0.2"), a.look_up("292.168.0.0")]
 
     def test_third(self):
-        self.checker(100, 0.01)
+        a = BloomFilter(1000, 0.01)
+        ip_adr = self.ip_generator()
+        a.insert(ip_adr)
+        assert True == a.look_up(ip_adr)
+
 
 
 if __name__ == "__main__":

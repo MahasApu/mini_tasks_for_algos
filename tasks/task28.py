@@ -10,36 +10,48 @@ class BloomFilter(object):
     '''
 
     def __init__(self, items_amount: int, prospect: float):
-        self.capacity = self.get_capacity(prospect, self.next_prime_num(items_amount))
-        self.universal_hash = self.get_hash_funcs(ceil(log(prospect, 0.5)))
+        self.capacity = ceil(items_amount * log(e, 0.5) * log(prospect, 2))
+        self.k = ceil(log(2) * self.capacity / items_amount)
+        self.universal_hash = self.get_hash_funcs(self.capacity, self.k)
         self.bit_array = bitarray(self.capacity)
         self.bit_array.setall(0)
 
-    def get_hash_funcs(self, hash_amount: int) -> List[Callable]:
-
-        def hash_func(c0: int, c1: int, c2: int, c3: int) -> Callable:
-            def get_hash(ip_address):
-                ip_addr = [int(_) for _ in ip_address.split('.')]
-                return ip_addr[0] * c0 + ip_addr[1] * c1 + ip_addr[2] * c2 + ip_addr[3] * c3
+    def get_hash_funcs(self, capacity: int, hash_amount: int) -> List[Callable]:
+        #
+        def hash_func(rand_num: int, capacity):
+            def get_hash(num):
+                return (num * rand_num) % capacity
 
             return get_hash
 
-        def funcs_generator(hash_amount: int) -> List[Callable]:
-            hash_funcs = []
+        def hash_generator(capacity, hash_amount):
+            funcs = []
             for _ in range(hash_amount):
-                c0, c1, c2, c3 = randint(0, 10), randint(0, 10), randint(0, 10), randint(0, 10)
-                hash_funcs.append(hash_func(c0, c1, c2, c3))
-            return hash_funcs
+                funcs.append(hash_func(randint(1, 10000), capacity))
+            return funcs
 
-        return funcs_generator(hash_amount)
+        return hash_generator(capacity, hash_amount)
 
-    def add(self, item) -> None:
+    def get_ip_hash(self, ip_address):
+
+        ip_addr = [int(_) for _ in ip_address.split('.')]
+        for i in range(len(ip_addr)):
+            if ip_addr[i] == 0:
+                ip_addr[i] = 1
+
+        return ip_addr[0] * ip_addr[1] * ip_addr[2] * ip_addr[3]
+
+    def insert(self, item) -> None:
+        ip_adr = self.get_ip_hash(item)
         for func in self.universal_hash:
-            self.bit_array[func(item) % self.capacity] = 1
+            index = func(ip_adr)
+            self.bit_array[index] = 1
 
     def look_up(self, item) -> bool:
+        ip_adr = self.get_ip_hash(item)
         for func in self.universal_hash:
-            if not self.bit_array[func(item) % self.capacity]:
+            index = func(ip_adr)
+            if not self.bit_array[index]:
                 return False
         return True
 
@@ -57,6 +69,3 @@ class BloomFilter(object):
             if isPrime:
                 return i
             i += 1
-
-    def get_capacity(self, prospect: float, capacity: int) -> int:
-        return ceil(ceil(log(prospect, 0.5)) / log(2, e)) * capacity
