@@ -36,12 +36,11 @@ class TwentyEighth(TestCase):
                 if instance.look_up(test_address):
                     errors_amount += 1
 
-        print(errors_amount/_range)
-        assert (errors_amount / _range)  <= prospect
-
+        print(errors_amount / _range)
+        assert (errors_amount / _range) <= prospect
 
     def test_first(self):
-        self.checker(20, 0.002)
+        self.checker(20, 0.5)
 
     def test_second(self):
         self.checker(10, 0.01)

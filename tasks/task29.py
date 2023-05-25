@@ -6,8 +6,8 @@ class Solution:
         colors = [0 for _ in range(len(graph))]
         visited = set()
 
-        def nice_dfs(node: List, color: int) -> bool:
-            res = True
+        def nice_dfs(node, color: int) -> bool:
+            result = True
             colors[node] = color
             if len(graph[node]) == 0:
                 return True
@@ -19,12 +19,11 @@ class Solution:
                 if neighbor in visited:
                     if colors[neighbor] == color:
                         return False
-                res = res and nice_dfs(neighbor, -color)
-            return res
+                result = result and nice_dfs(neighbor, -color)
+            return result
 
         for i in range(len(graph)):
             if not nice_dfs(i, 1):
                 return False
-
         return True
 
