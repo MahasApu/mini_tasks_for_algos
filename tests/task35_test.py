@@ -1,9 +1,9 @@
-from tasks.task35 import Union_find_algo, griddy_algo
+from tasks.task35 import Union_find_algo, greedy_algo
 
 
 def checker(expr: list):
     answer1 = Union_find_algo(expr)[1]
-    answer2 = griddy_algo(expr)[1]
+    answer2 = greedy_algo(expr)[1]
     assert answer1 <= answer2
 
 

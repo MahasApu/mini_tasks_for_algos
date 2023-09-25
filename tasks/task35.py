@@ -22,7 +22,7 @@ class Union_Find():
                 self.rank[node1_inst] += 1
 
 
-def griddy_algo(data: list):
+def greedy_algo(data: list):
     data = sorted(data, key=lambda i: i[2], reverse=True)
     possible_time_table = []
     sum_fines = 0
@@ -61,5 +61,5 @@ def Union_find_algo(data: list):
 
 def main():
     test_data = [['A', 3, 25], ['B', 4, 10], ['C', 1, 30], ['D', 3, 50], ['E', 3, 20]]
-    print(griddy_algo(test_data))
+    print(greedy_algo(test_data))
     print(Union_find_algo(test_data))
