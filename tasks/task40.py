@@ -1,6 +1,3 @@
-from typing import List
-
-
 class Solution:
     def findTheCity(self, n: int, edges: List[List[int]], distanceThreshold: int) -> int:
 
@@ -21,8 +18,7 @@ class Solution:
         for i in range(n):
             counter = 0
             for j in range(n):
-                if i != j and weights[i][j] <= distanceThreshold:
-                    counter += 1
+                counter += i != j and weights[i][j] <= distanceThreshold
             if counter <= min_amount:
                 city_index = max(i, city_index)
                 min_amount = counter
