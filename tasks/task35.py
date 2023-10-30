@@ -3,6 +3,7 @@ class Union_Find():
         self.amount_eq_classes = amount
         self.rank = [0] * amount
         self.eq_class_inst = [i for i in range(amount)]
+        self.left_items = [i for i in range(amount)]
 
     def find(self, inst: int) -> int:
         if self.eq_class_inst[inst] != inst:
@@ -29,8 +30,9 @@ def greedy_algo(data: list):
     for index, task in enumerate(data):
         name, deadline, fine = task[0], task[1], task[2]
         possible_time_table.append(name)
-        if index < deadline:
+        if index > deadline - 1:
             sum_fines += fine
+
     return possible_time_table, sum_fines
 
 
@@ -43,19 +45,42 @@ def Union_find_algo(data: list):
 
     data = sorted(data, key=lambda i: i[2], reverse=True)
     eq_classes = len(data)
-    union_find = Union_Find(eq_classes)
+    union_find = Union_Find(eq_classes + 1)
     possible_time_table = [""] * eq_classes
     sum_fines = 0
 
     for task in data:
-        name, deadline, fine = task[0], task[1], task[2]
-        index = union_find.find(deadline - 1)
-        union_find.union(index - 1, index)
-        possible_time_table[index] = name
+        task_name, deadline, fine = task
+        class_eq = union_find.find(deadline)
+        place_to_put = union_find.left_items[class_eq]
 
-        if index > deadline:
+        if place_to_put <= 0:
+            class_eq = union_find.find(eq_classes)
+            place_to_put = union_find.left_items[class_eq]
             sum_fines += fine
 
+        possible_time_table[place_to_put - 1] = task_name
+        new_left = min(place_to_put, union_find.left_items[union_find.find(place_to_put - 1)])
+        union_find.union(place_to_put, place_to_put - 1)
+        union_find.left_items[union_find.find(place_to_put)] = new_left
+
+        # if possible_time_table[deadline]:
+        #     index = union_find.find(deadline - 1)
+        #     deadline = union_find.left_items[index] - 1
+        #     if deadline < 0:
+        #         sum_fines += fine
+        #         index = union_find.find(eq_classes - 1)
+        #         deadline = union_find.left_items[index]
+        #         if possible_time_table[deadline]:
+        #             deadline -= 1
+        # possible_time_table[deadline] = task_name
+        # if deadline - 1 >= 0 and possible_time_table[deadline - 1] and union_find.find(deadline) != union_find.find(
+        #         deadline - 1):
+        #     union_find.union(deadline - 1, deadline)
+        # if deadline + 1 < eq_classes and possible_time_table[deadline + 1] and union_find.find(
+        #         deadline) != union_find.find(deadline + 1):
+        #     union_find.union(deadline + 1, deadline)
+    print(possible_time_table, sum_fines)
     return possible_time_table, sum_fines
 
 
