@@ -11,7 +11,7 @@ class ImplicitTreapNode:
         self.left = left
         self.right = right
         self.size = 1
-        self.segment_sum = val
+        self.sum = val
 
 
 class ImplicitTreap:
@@ -36,7 +36,7 @@ class ImplicitTreap:
 
         if treap == None:
             return
-        treap.segment_sum = treap.val + self.get_sum(treap.left) + self.get_sum(treap.right)
+        treap.sum = treap.val + self.get_sum(treap.left) + self.get_sum(treap.right)
 
     def get_size(self, treap: ImplicitTreapNode):
 
@@ -48,7 +48,7 @@ class ImplicitTreap:
 
         if treap == None:
             return 0
-        return treap.segment_sum
+        return treap.sum
 
     def determined_pull(self, array):
 
