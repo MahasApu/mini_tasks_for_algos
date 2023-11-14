@@ -4,7 +4,7 @@ from tasks.task41 import ImplicitTreap
 
 def generator(start: int, end: int, test_data: list = None, size: int = None):
     if not test_data:
-        test_data = sorted([randrange(100) for _ in range(size)])
+        test_data = [randrange(100) for _ in range(size)]
         implicit_treap = ImplicitTreap(array=test_data, rand=True)
         check_sum = sum(test_data[start:end + 1])
     else:
