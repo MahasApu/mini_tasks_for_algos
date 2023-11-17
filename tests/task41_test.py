@@ -3,13 +3,16 @@ from tasks.task41 import ImplicitTreap
 
 
 def generator(start: int, end: int, test_data: list = None, size: int = None):
+    implicit_treap = ImplicitTreap()
     if not test_data:
-        test_data = [randrange(100) for _ in range(size)]
-        implicit_treap = ImplicitTreap(array=test_data, rand=True)
+        test_data = [randrange(size ** size) for _ in range(size)]
+        for index, value in enumerate(test_data):
+            implicit_treap.insert(index, value)
         check_sum = sum(test_data[start:end + 1])
     else:
-        implicit_treap = ImplicitTreap(array=test_data, rand=False)
-        # implicit_treap.print_helper(implicit_treap.root, '', True)
+        for index, item in enumerate(test_data):
+            value, priority = item
+            implicit_treap.insert(index, value, priority)
         tmp = [node[0] for node in test_data]
         check_sum = sum(tmp[start:end + 1])
 
