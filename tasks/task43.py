@@ -50,7 +50,7 @@ class SegmentTree:
             j += 1
         return myList
 
-    def count_greater(self, value: int, v: int, tl: int, tr: int, l: int, r: int) -> int:
+    def count_smaller(self, value: int, v: int, tl: int, tr: int, l: int, r: int) -> int:
 
         if l == tl and r == tr:
             return self.binay_search(self.t[v], value)
@@ -58,9 +58,9 @@ class SegmentTree:
         res = 0
 
         if l <= tm:
-            res += self.count_greater(value, v * 2, tl, tm, l, min(r, tm))
+            res += self.count_smaller(value, v * 2, tl, tm, l, min(r, tm))
         if r >= tm + 1:
-            res += self.count_greater(value, v * 2 + 1, tm + 1, tr, max(l, tm + 1), r)
+            res += self.count_smaller(value, v * 2 + 1, tm + 1, tr, max(l, tm + 1), r)
 
         return res
 
@@ -70,5 +70,5 @@ class Solution:
         tree = SegmentTree(nums)
         result = []
         for index in range(len(nums)):
-            result.append(tree.count_greater(nums[index], 1, 0, tree.amount - 1, index, tree.amount - 1))
+            result.append(tree.count_smaller(nums[index], 1, 0, tree.amount - 1, index, tree.amount - 1))
         return result
