@@ -50,6 +50,7 @@ class SegmentTree:
             j += 1
         return myList
 
+
     def count_smaller(self, value: int, v: int, tl: int, tr: int, l: int, r: int) -> int:
 
         if l == tl and r == tr:
@@ -63,7 +64,6 @@ class SegmentTree:
             res += self.count_smaller(value, v * 2 + 1, tm + 1, tr, max(l, tm + 1), r)
 
         return res
-
 
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
