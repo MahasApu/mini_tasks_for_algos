@@ -1,3 +1,4 @@
+import bisect
 from typing import List
 
 
@@ -18,19 +19,6 @@ class SegmentTree:
         self.build(v * 2 + 1, tm + 1, tr)
         self.t[v] = self.merge(self.t[v * 2], self.t[v * 2 + 1])
 
-    def binay_search(self, arr, k):
-        l = 0
-        r = len(arr) - 1
-        count = 0
-        while (l <= r):
-            m = l + ((r - l) >> 1)
-            if (arr[m] < k):
-                count = m + 1
-                l = m + 1
-            else:
-                r = m - 1
-        return count
-
     def merge(self, left, right):
         myList = []
         i = 0
@@ -50,11 +38,10 @@ class SegmentTree:
             j += 1
         return myList
 
-
     def count_smaller(self, value: int, v: int, tl: int, tr: int, l: int, r: int) -> int:
 
         if l == tl and r == tr:
-            return self.binay_search(self.t[v], value)
+            return bisect.bisect_left(self.t[v], value)
         tm = (tl + tr) >> 1
         res = 0
 
@@ -64,6 +51,7 @@ class SegmentTree:
             res += self.count_smaller(value, v * 2 + 1, tm + 1, tr, max(l, tm + 1), r)
 
         return res
+
 
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
