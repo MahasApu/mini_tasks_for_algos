@@ -1,21 +1,19 @@
 class Solution:
     def isMatch(self, s: str, p: str) -> bool:
-        columns = len(s)
-        lines = len(p)
-        matched = [[False for j in range(lines + 1)] for i in range(columns + 1)]
+        matched = [[False for j in range(len(p) + 1)] for i in range(len(s) + 1)]
         matched[0][0] = True
 
-        for line in range(1, lines + 1):
-            if p[line - 1] == '*':
-                matched[0][line] = matched[0][line - 1]
+        for j in range(1, len(p) + 1):
+            if p[j - 1] == '*':
+                matched[0][j] = matched[0][j - 1]
 
-        for column in range(1, columns + 1):
-            for line in range(1, lines + 1):
-                if (p[line - 1] == s[column - 1]) or p[line - 1] == '?':
-                    matched[column][line] = matched[column - 1][line - 1]
-                elif p[line - 1] == '*':
-                    match = matched[column][line - 1] or matched[column - 1][line] or matched[column - 1][line - 1]
-                    matched[column][line] = match
+        for j in range(1, len(s) + 1):
+            for i in range(1, len(p) + 1):
+                if (p[i - 1] == s[j - 1]) or p[i - 1] == '?':
+                    matched[j][i] = matched[j - 1][i - 1]
+                elif p[i - 1] == '*':
+                    match = matched[j][i - 1] or matched[j - 1][i] or matched[j - 1][i - 1]
+                    matched[j][i] = match
                 else:
-                    matched[column][line] = False
-        return matched[columns][lines]
+                    matched[j][i] = False
+        return matched[len(s)][len(p)]

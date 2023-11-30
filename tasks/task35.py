@@ -64,22 +64,6 @@ def Union_find_algo(data: list):
         union_find.union(place_to_put, place_to_put - 1)
         union_find.left_items[union_find.find(place_to_put)] = new_left
 
-        # if possible_time_table[deadline]:
-        #     index = union_find.find(deadline - 1)
-        #     deadline = union_find.left_items[index] - 1
-        #     if deadline < 0:
-        #         sum_fines += fine
-        #         index = union_find.find(eq_classes - 1)
-        #         deadline = union_find.left_items[index]
-        #         if possible_time_table[deadline]:
-        #             deadline -= 1
-        # possible_time_table[deadline] = task_name
-        # if deadline - 1 >= 0 and possible_time_table[deadline - 1] and union_find.find(deadline) != union_find.find(
-        #         deadline - 1):
-        #     union_find.union(deadline - 1, deadline)
-        # if deadline + 1 < eq_classes and possible_time_table[deadline + 1] and union_find.find(
-        #         deadline) != union_find.find(deadline + 1):
-        #     union_find.union(deadline + 1, deadline)
     print(possible_time_table, sum_fines)
     return possible_time_table, sum_fines
 

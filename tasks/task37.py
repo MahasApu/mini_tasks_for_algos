@@ -16,7 +16,8 @@ class Solution:
             dmg = dungeon[line][column]
 
             if line == m - 1 and column == n - 1:
-                return max(1, 1 - dmg)
+                return 1 if dmg >= 0 else 1 - dmg
+
             if curr_hp != -1:
                 return curr_hp
 
